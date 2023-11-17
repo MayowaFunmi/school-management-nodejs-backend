@@ -1,4 +1,5 @@
 const { adminRoleToUser } = require('../services/roleService');
+const { createOrganization } = require('../services/adminServices');
 const Role = require('../models/userRoles');
 
 const addAdminRoleToUser = async (req, res) => {
@@ -42,5 +43,16 @@ const getAllRoles = async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 }
-module.exports = { addAdminRoleToUser, addNewRole, getAllRoles };
+
+const addOrganization = async (req, res) => {
+    try {
+        const { userId, organization } = req.body;
+        await createOrganization(userId, organization);
+        return res.status(200).json({ message: "your organization created successfully, you are now an admin"});
+    } catch (error) {
+        console.log("error occured - ", error);
+        return res.status(500).json({ message: "internal server error "})
+    }
+}
+module.exports = { addAdminRoleToUser, addNewRole, getAllRoles, addOrganization };
   
