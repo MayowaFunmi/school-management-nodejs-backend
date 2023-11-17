@@ -12,7 +12,7 @@ const authRoutes = require('./routes/authRoutes');
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 app.use(cors());
-app.use('/api', rolesRoutes);
+app.use('/api/admin', rolesRoutes);
 app.use('/api', userRoutes);
 app.use('/api', authRoutes);
 

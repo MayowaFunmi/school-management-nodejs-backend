@@ -4,7 +4,7 @@ const roleSchema = new mongoose.Schema({
     roleName: {
         type: String, required: true, unique: true
     }
-}, { timestamps: true});
+}, { timestamps: true });
 
 const Role = mongoose.model('Role', roleSchema);
 

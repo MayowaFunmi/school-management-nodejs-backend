@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Role = require('../models/userRoles');
+const { checkSuperAdminRole } = require('../middleware/checkAdmin');
+const addAdminRoleToUser = require('../controllers/adminController');
 
 // add roles route
-router.post('/addRole', async (req, res) => {
+router.post('/addRole', checkSuperAdminRole, async (req, res) => {
     try {
         const roleName = req.body.roleName;
         if (!roleName) {
@@ -19,7 +21,7 @@ router.post('/addRole', async (req, res) => {
     }
 });
 
-router.get('/getRoles', async (req, res) => {
+router.get('/getRoles', checkSuperAdminRole, async (req, res) => {
     try {
         const roles = await Role.find();
         res.status(200).json({ message: "all roles fetched successfully", data: roles });
@@ -28,5 +30,8 @@ router.get('/getRoles', async (req, res) => {
         res.status(500).json({ message: 'Internal server error.' });
     }
 });
+
+// add ADMIN ROLE to user
+router.post('/add-admin-role', checkSuperAdminRole, addAdminRoleToUser);
 
 module.exports = router;
