@@ -3,6 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const USER = require('../models/userModel');
 const ROLE = require('../models/userRoles');
+const verifyLogin = require('../middleware/verifyLogin');
+const { checkSuperAdminRole } = require('../middleware/checkAdmin');
 
 // user registration
 router.post('/register-user', async (req, res) => {
@@ -49,7 +51,7 @@ router.post('/register-user', async (req, res) => {
 });
 
 // get user by Id
-router.get('/get-user-by-id/:userId', async (req, res) => {
+router.get('/get-user-by-id/:userId', verifyLogin, checkSuperAdminRole, async (req, res) => {
     try {
         const userId = req.params.userId;
 
@@ -70,7 +72,7 @@ router.get('/get-user-by-id/:userId', async (req, res) => {
 });
 
 // get all users
-router.get('/list-all-users', async (req, res) => {
+router.get('/list-all-users', verifyLogin, checkSuperAdminRole, async (req, res) => {
     try {
         const users = await USER.find();
         res.status(200).json({ message: `all ${users.length} users fetched successfully`, data: users });

@@ -1,9 +1,9 @@
 const USER = require('../models/userModel');
 const ROLES = require('../models/userRoles');
 
-const adminRoleToUser = async (userId) => {
+const adminRoleToUser = async (userId, roleName) => {
     try {
-        const adminRole = await ROLES.findOne({ roleName: 'ADMIN' });
+        const adminRole = await ROLES.findOne({ roleName: roleName });
         if (!adminRole) {
             throw new Error('Role not found');
         }
@@ -16,11 +16,13 @@ const adminRoleToUser = async (userId) => {
             user.roles = [];
         }
 
-        if (!user.roles.includes('ADMIN')) {
-            user.roles.push(adminRole._id);
+        if (!user.roles.includes(adminRole._id.toString())) {
+            user.roles.push(adminRole._id.toString());
+            await user.save();
+            console.log('ADMIN role added successfully');
+        } else {
+            console.log(`user already has role ${roleName}`);
         }
-        await user.save();
-        console.log('ADMIN role added successfully');
     } catch (error) {
         console.error('Error adding ADMIN role:', error);
         throw error;

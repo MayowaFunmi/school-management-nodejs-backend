@@ -1,11 +1,12 @@
 const { adminRoleToUser } = require('../services/roleService');
+const Role = require('../models/userRoles');
 
 const addAdminRoleToUser = async (req, res) => {
-    const userId = req.params.userId;
+    const {userId, roleName } = req.body;
   
     try {
       // Call the method to add the 'ADMIN' role to the user
-      await adminRoleToUser(userId);
+      await adminRoleToUser(userId, roleName);
   
       // Respond with a success message
       res.status(200).json({ message: 'ADMIN role added successfully.' });
@@ -14,7 +15,32 @@ const addAdminRoleToUser = async (req, res) => {
       console.error('Error:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
-  };
-  
-  module.exports = addAdminRoleToUser;
+};
+
+const addNewRole = async (req, res) => {
+	try {
+        const roleName = req.body.roleName;
+        if (!roleName) {
+            return res.status(400).json({ message: "Role name should not be empty"})
+        }
+
+        const newRole = new Role({ roleName });
+        const role = await newRole.save();
+        res.status(201).json({ message: `Role ${roleName} added successfully`, data: role})
+    } catch (error) {
+        console.error('Error adding role:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+}
+
+const getAllRoles = async (req, res) => {
+	try {
+        const roles = await Role.find();
+        res.status(200).json({ message: "all roles fetched successfully", data: roles });
+    } catch (error) {
+        console.error('Error getting roles:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+}
+module.exports = { addAdminRoleToUser, addNewRole, getAllRoles };
   

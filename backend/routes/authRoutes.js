@@ -25,7 +25,7 @@ router.post('/signin', async (req, res) => {
                 userId: user._id, roles: user.roles
             },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '5m'}
+            { expiresIn: '30m'}
         );
 
         res.status(200).json({ messgae: "user signed in successfully", accessToken: accessToken})

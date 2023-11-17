@@ -13,8 +13,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 app.use(cors());
 app.use('/api/admin', rolesRoutes);
-app.use('/api', userRoutes);
-app.use('/api', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
 
 const uri = process.env.DB_URL;
 const PORT = process.env.PORT || 5000;
