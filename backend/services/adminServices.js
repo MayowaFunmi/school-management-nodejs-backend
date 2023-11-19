@@ -1,20 +1,52 @@
 const USER = require('../models/userModel');
-const admin = require('../models/organizationModel');
+const Admin = require('../models/organizationModel');
 const { adminRoleToUser } = require('../services/roleService');
 
-const createZone = async (zoneName) => {
+const createZone = async (orgId, zoneName) => {
+
     if (!zoneName) {
         throw new Error('Zone name cannot be null');
     }
 }
 
-const createOrganization = async (userId, organization) => {
+const getOrganizationByName = async (orgName) => {
+    let name = "";
+    if (orgName)
+    {
+        name = orgName.toLowerCase();
+    } else {
+        throw new Error("Organization name cannot be empty");
+    }
+    const org = await Admin.findOne({ organizationName: name});
+    if (org) {
+        return org._id.toString();
+    } else {
+        return null;
+    }
+};
+
+const getOrganizationByByAdminId = async (adminId) => {
+    const orgAdmin = await Admin.findOne({ userId: adminId });
+    if (orgAdmin) {
+        return orgAdmin._id.toString();
+    } else {
+        return null;
+    }
+}
+
+const createOrganization = async (userId, org) => {
     const user = await USER.findById(userId);
+    let organization = "";
     if (!user) {
         throw new Error("user not found")
     }
-
-    const savedOrg = new admin({
+    if (!org)
+    {
+        throw new Error("Organization name cannot be empty");
+    } else {
+        organization = org.toLowerCase();
+    }
+    const savedOrg = new Admin({
         userId, 
         organizationName: organization
     });
@@ -24,4 +56,4 @@ const createOrganization = async (userId, organization) => {
     await adminRoleToUser(userId, "ADMIN");
 }
 
-module.exports = { createZone, createOrganization }
+module.exports = { createZone, createOrganization, getOrganizationByName, getOrganizationByByAdminId, createZone };

@@ -42,7 +42,7 @@ router.post('/refreshToken', verifyLogin, (req, res) => {
     // Generate a new access token
     const newAccessToken = jwt.sign(
         {
-        userId: req.user.userid,
+        userId: req.user.userId,
         roles: req.user.roles,
         },
         process.env.ACCESS_TOKEN_SECRET,

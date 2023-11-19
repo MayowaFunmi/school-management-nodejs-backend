@@ -1,5 +1,5 @@
 const { adminRoleToUser } = require('../services/roleService');
-const { createOrganization } = require('../services/adminServices');
+const { createOrganization, getOrganizationByName, getOrganizationByByAdminId, createZone } = require('../services/adminServices');
 const Role = require('../models/userRoles');
 
 const addAdminRoleToUser = async (req, res) => {
@@ -54,5 +54,45 @@ const addOrganization = async (req, res) => {
         return res.status(500).json({ message: "internal server error "})
     }
 }
-module.exports = { addAdminRoleToUser, addNewRole, getAllRoles, addOrganization };
+
+const organizationByName = async (req, res) => {
+    try {
+        const { name } = req.body;
+        const getOrdId = await getOrganizationByName(name);
+        if (!getOrdId) {
+            return res.status(300).json({ message: `Organiation with the name '${name}' not found`})
+        }
+        return res.status(200).json({ message: "Organization Id found successfully", data: getOrdId });
+    } catch (error) {
+        return res.status(500).json({ message: "internal server error"});
+    }
+};
+
+const organizationByAdminId = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const orgId = await getOrganizationByByAdminId(userId);
+        if (orgId == null) {
+            return res.status(404).json({ message: "user not found for the organization" })
+        } else {
+            return res.status(200).json({ message: "organization id retrieved successfully", data: orgId })
+        }
+    } catch (error) {
+        return res.status(500).json({ message: `internal server error - ${error}`});
+    }
+}
+
+const addZone = async (req, res) => {
+    try {
+        const { zoneName } = req.body;
+        const userId = req.user.userId;
+        const orgId = await getOrganizationByByAdminId(userId);
+        if(orgId) {
+            await createZone(orgId, zoneName);
+        }
+    } catch (error) {
+        
+    }
+}
+module.exports = { addAdminRoleToUser, addNewRole, getAllRoles, addOrganization, organizationByName, organizationByAdminId };
   
