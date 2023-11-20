@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const teachingStaffSchema = new mongoose.Schema({
     // bio data
+    organizationUniqueId: {
+        type: String,
+        required: true
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

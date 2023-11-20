@@ -4,9 +4,9 @@ const deptSchema = new mongoose.Schema({
     name: {
         type: String, required: true
     },
-    organizationId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Organization'
+    organizationUniqueId: {
+        type: String,
+        required: true
     },
 }, { timestamps: true });
 

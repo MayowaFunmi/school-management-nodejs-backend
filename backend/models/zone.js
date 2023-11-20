@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const zoneSchema = new mongoose.Schema({
-    organizationId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Organization'
+    organizationUniqueId: {
+        type: String,
+        required: true
     },
     name: {
         type: String, required: true

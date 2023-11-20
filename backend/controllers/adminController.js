@@ -1,5 +1,5 @@
 const { adminRoleToUser } = require('../services/roleService');
-const { createOrganization, getOrganizationByName, getOrganizationByByAdminId, createZone } = require('../services/adminServices');
+const { createOrganization, getOrganizationByName, getOrganizationByAdminId, createZone, organizationExists } = require('../services/adminServices');
 const Role = require('../models/userRoles');
 
 const addAdminRoleToUser = async (req, res) => {
@@ -71,7 +71,7 @@ const organizationByName = async (req, res) => {
 const organizationByAdminId = async (req, res) => {
     try {
         const userId = req.user.userId;
-        const orgId = await getOrganizationByByAdminId(userId);
+        const orgId = await getOrganizationByAdminId(userId);
         if (orgId == null) {
             return res.status(404).json({ message: "user not found for the organization" })
         } else {
@@ -84,15 +84,18 @@ const organizationByAdminId = async (req, res) => {
 
 const addZone = async (req, res) => {
     try {
-        const { zoneName } = req.body;
         const userId = req.user.userId;
-        const orgId = await getOrganizationByByAdminId(userId);
+        const { uniqueId, zoneName } = req.body;
+        const orgId = await organizationExists(uniqueId, userId);
         if(orgId) {
-            await createZone(orgId, zoneName);
+            const response = await createZone(orgId, zoneName);
+            return res.status(200).json({ message: "Zone created successfully", data: response })
+        } else {
+            return res.status(401).json({ message: "error: org does not exist or you are not authorized to access the org"})
         }
     } catch (error) {
-        
+        return res.status(500).json({ message: `internal server error - ${error}`})
     }
 }
-module.exports = { addAdminRoleToUser, addNewRole, getAllRoles, addOrganization, organizationByName, organizationByAdminId };
-  
+
+module.exports = { addAdminRoleToUser, addNewRole, getAllRoles, addOrganization, organizationByName, organizationByAdminId, addZone };

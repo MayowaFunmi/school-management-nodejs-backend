@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const studentSchema = new mongoose.Schema({
   // General data
+  organizationUniqueId: {
+    type: String,
+    required: true
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

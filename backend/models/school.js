@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const schoolSchema = new mongoose.Schema({
+  organizationUniqueId: {
+    type: String,
+    required: true
+  },
   zone: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Zone',

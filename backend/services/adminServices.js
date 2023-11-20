@@ -1,12 +1,19 @@
 const USER = require('../models/userModel');
 const Admin = require('../models/organizationModel');
+const Zone = require('../models/zone');
 const { adminRoleToUser } = require('../services/roleService');
 
 const createZone = async (orgId, zoneName) => {
 
-    if (!zoneName) {
-        throw new Error('Zone name cannot be null');
+    if (!zoneName || !orgId) {
+        throw new Error('Zone name or organization Id cannot be null');
     }
+    const newOrg = new Zone({
+        organizationUniqueId: orgId,
+        name: zoneName
+    })
+    await newOrg.save();
+    return newOrg;
 }
 
 const getOrganizationByName = async (orgName) => {
@@ -25,7 +32,7 @@ const getOrganizationByName = async (orgName) => {
     }
 };
 
-const getOrganizationByByAdminId = async (adminId) => {
+const getOrganizationByAdminId = async (adminId) => {
     const orgAdmin = await Admin.findOne({ userId: adminId });
     if (orgAdmin) {
         return orgAdmin._id.toString();
@@ -33,6 +40,18 @@ const getOrganizationByByAdminId = async (adminId) => {
         return null;
     }
 }
+
+const organizationExists = async (orgUniqueId, adminId) => {
+    if (!orgUniqueId) {
+        throw new Error("Organization's unique id cannot be empty");
+    }
+    const orgAdmin = await Admin.findOne({ organizationUniqueId: orgUniqueId });
+    if (orgAdmin && orgAdmin.userId == adminId) {
+        return orgUniqueId;
+    } else {
+        return false;
+    }
+};
 
 const createOrganization = async (userId, org) => {
     const user = await USER.findById(userId);
@@ -46,9 +65,11 @@ const createOrganization = async (userId, org) => {
     } else {
         organization = org.toLowerCase();
     }
+    const organizationUniqueId = Admin.generateUniqueId();
     const savedOrg = new Admin({
         userId, 
-        organizationName: organization
+        organizationName: organization,
+        organizationUniqueId
     });
     await savedOrg.save();
 
@@ -56,4 +77,4 @@ const createOrganization = async (userId, org) => {
     await adminRoleToUser(userId, "ADMIN");
 }
 
-module.exports = { createZone, createOrganization, getOrganizationByName, getOrganizationByByAdminId, createZone };
+module.exports = { createZone, createOrganization, getOrganizationByName, getOrganizationByAdminId, createZone, organizationExists };
