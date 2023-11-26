@@ -1,5 +1,5 @@
 const { adminRoleToUser } = require('../services/roleService');
-const { createOrganization, getOrganizationByName, getOrganizationByAdminId, createZone, organizationExists } = require('../services/adminServices');
+const { createOrganization, getOrganizationByName, getOrganizationByAdminId, createZone, organizationExists, createDepartment } = require('../services/adminServices');
 const Role = require('../models/userRoles');
 
 const addAdminRoleToUser = async (req, res) => {
@@ -98,4 +98,23 @@ const addZone = async (req, res) => {
     }
 }
 
-module.exports = { addAdminRoleToUser, addNewRole, getAllRoles, addOrganization, organizationByName, organizationByAdminId, addZone };
+const addDepartment = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { uniqueId, deptName } = req.body;
+        const orgId = await organizationExists(uniqueId, userId);
+        if(orgId) {
+            const response = await createDepartment(orgId, deptName);
+            return res.status(200).json({ message: "Department created successfully", data: response })
+        } else {
+            return res.status(401).json({ message: "error: org does not exist or you are not authorized to access the org"})
+        }
+    } catch (error) {
+        return res.status(500).json({ message: `internal server error - ${error}`})
+    }
+}
+
+module.exports = {
+    addAdminRoleToUser, addNewRole, getAllRoles, addOrganization, organizationByName, 
+    organizationByAdminId, addZone, addDepartment
+};

@@ -2,6 +2,7 @@ const USER = require('../models/userModel');
 const Admin = require('../models/organizationModel');
 const Zone = require('../models/zone');
 const { adminRoleToUser } = require('../services/roleService');
+const Department = require('../models/department');
 
 const createZone = async (orgId, zoneName) => {
 
@@ -14,6 +15,18 @@ const createZone = async (orgId, zoneName) => {
     })
     await newOrg.save();
     return newOrg;
+}
+
+const createDepartment = async (orgId, zoneName) => {
+    if (!zoneName || !orgId) {
+        throw new Error('Zone name or organization Id cannot be null');
+    }
+    const newDept = new Department({
+        name: zoneName,
+        organizationUniqueId: orgId
+    })
+    await newDept.save();
+    return newDept;
 }
 
 const getOrganizationByName = async (orgName) => {
@@ -77,4 +90,7 @@ const createOrganization = async (userId, org) => {
     await adminRoleToUser(userId, "ADMIN");
 }
 
-module.exports = { createZone, createOrganization, getOrganizationByName, getOrganizationByAdminId, createZone, organizationExists };
+module.exports = {
+    createZone, createOrganization, getOrganizationByName, getOrganizationByAdminId, 
+    createZone, organizationExists, createDepartment
+};
