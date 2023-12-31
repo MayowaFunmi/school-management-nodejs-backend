@@ -17,12 +17,12 @@ const createZone = async (orgId, zoneName) => {
     return newOrg;
 }
 
-const createDepartment = async (orgId, zoneName) => {
-    if (!zoneName || !orgId) {
+const createDepartment = async (orgId, deptName) => {
+    if (!deptName || !orgId) {
         throw new Error('Zone name or organization Id cannot be null');
     }
     const newDept = new Department({
-        name: zoneName,
+        name: deptName,
         organizationUniqueId: orgId
     })
     await newDept.save();
